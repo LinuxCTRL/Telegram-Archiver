@@ -64,6 +64,16 @@
 - **Performance Optimized** - Efficient CSS, lazy loading, and smart caching
 - **Cross-platform** - Works on Windows, macOS, and Linux
 
+## 📸 Screenshots
+
+### 🎨 **Modern Dashboard with Dark Theme**
+![Dashboard Screenshot](static/1.png)
+*Beautiful dark theme dashboard with real-time statistics, channel management, and archiving controls*
+
+### 🔍 **Advanced Search Interface**
+![Search Screenshot](static/2.png)
+*Powerful search functionality with highlighted results and channel filtering*
+
 ## 🚀 Quick Start
 
 ### Prerequisites
