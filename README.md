@@ -1,205 +1,343 @@
-# 🤖 Telegram Channel Archiver & Real-Time Monitor
+# 🚀 Telegram Archive Browser
 
-A powerful Python tool to archive Telegram channel messages and monitor channels in real-time with automatic media downloads.
+> **A modern, elegant web-based Telegram channel archiver with real-time monitoring, smart file handling, and beautiful dark theme UI**
 
-## 🌟 Features
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-2.0+-green.svg)](https://flask.palletsprojects.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-3.0+-06B6D4.svg)](https://tailwindcss.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### 📚 Batch Archiver (`run_archiver.py`)
-- Archive messages from multiple channels at once
-- Download images, videos, and documents automatically
-- Generate clean markdown files with embedded media
-- Configurable date ranges and message limits
-- Metadata tracking with JSON files
+## ✨ Features
 
-### 🎧 Real-Time Monitor (`telegram_monitor.py`)
-- **Live monitoring** of channel messages as they arrive
-- **Instant archiving** of new messages
-- **Real-time media downloads**
-- **Daily log files** organized by channel
-- **Background operation** with graceful shutdown
+### 🎨 **Modern Web Interface**
+- **Dark/Light Theme Toggle** - Professional dark mode with smooth transitions
+- **Glass Morphism Design** - Beautiful translucent cards with backdrop blur effects
+- **Custom OperatorMono Font** - Elegant monospace typography throughout
+- **Responsive Design** - Perfect on desktop, tablet, and mobile devices
+- **Real-time Updates** - Live progress monitoring and status indicators
 
-### 🎛️ Easy Control (`monitor_control.py`)
-- Start/stop monitoring with simple commands
-- Check status and statistics
-- View recent activity logs
-- Restart monitoring easily
+### 📱 **Channel Management**
+- **Web-based Configuration** - No more manual config.json editing
+- **Add/Edit/Delete Channels** - Full CRUD operations with beautiful modals
+- **Smart URL Validation** - Supports `https://t.me/channel` and `@channel` formats
+- **Auto-name Generation** - Automatically suggests friendly names from URLs
+- **Enable/Disable Channels** - Toggle archiving without deleting configuration
+- **Bulk Operations** - Manage multiple channels efficiently
+
+### 🔄 **Frontend Archiving Control**
+- **Start/Stop Archiving** - Full control from the web interface
+- **Real-time Progress Tracking** - Live progress bars and channel status
+- **Smart File Handling** - Configurable file size limits (skip large files)
+- **Live Logs Terminal** - Real-time archiving logs with terminal styling
+- **Process Monitoring** - Track current channel, processed count, and timing
+
+### 📊 **Advanced Dashboard**
+- **Statistics Cards** - Animated counters for channels, messages, files, and media
+- **Archive Overview** - Visual representation of your archive collection
+- **Channel Status** - Live indicators for archiving activity
+- **Quick Actions** - Fast access to search, refresh, and system info
+
+### 🔍 **Powerful Search**
+- **Full-text Search** - Find content across all archived channels
+- **Channel Filtering** - Search within specific channels
+- **Highlighted Results** - Search terms highlighted in results
+- **Advanced Filters** - Date ranges, media types, and more
+- **Export Results** - Save search results for later analysis
+
+### 📁 **Smart File Management**
+- **Markdown + JSON Format** - Human-readable archives with metadata
+- **Media Organization** - Automatic media file organization and linking
+- **Image Previews** - Click images for full-size modal previews
+- **File Type Detection** - Smart icons and handling for different media types
+- **Size Optimization** - Configurable file size limits to prevent long downloads
+
+### 🛡️ **Security & Performance**
+- **Secure Configuration** - API credentials safely stored
+- **Error Handling** - Graceful failure recovery and user feedback
+- **Performance Optimized** - Efficient CSS, lazy loading, and smart caching
+- **Cross-platform** - Works on Windows, macOS, and Linux
 
 ## 🚀 Quick Start
 
-### 1. Setup API Credentials
-1. Get credentials from https://my.telegram.org/apps
-2. Update `config.json` with your API ID and Hash
+### Prerequisites
+- Python 3.8 or higher
+- Telegram API credentials (api_id and api_hash)
 
-### 2. Configure Channels
-Edit `config.json` to add your channels:
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/telegram-archive-browser.git
+   cd telegram-archive-browser
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configure API credentials**
+   ```bash
+   python test_setup.py
+   ```
+   Follow the prompts to enter your Telegram API credentials.
+
+4. **Start the web interface**
+   ```bash
+   python web_frontend.py
+   ```
+
+5. **Open your browser**
+   Navigate to `http://localhost:5000` and enjoy your modern archive browser!
+
+## 📖 Usage Guide
+
+### 🎛️ **Channel Management**
+
+#### Adding Channels
+1. Click the **"Add Channel"** button in the Channel Management section
+2. Enter the Telegram channel URL (`https://t.me/channelname`) or username (`@channelname`)
+3. The display name will be auto-generated, or you can customize it
+4. Choose whether to enable archiving immediately
+5. Click **"Add Channel"** to save
+
+#### Managing Existing Channels
+- **Edit**: Click the edit button to modify channel details
+- **Enable/Disable**: Toggle archiving without deleting the channel
+- **Delete**: Remove channels with confirmation (archived files remain)
+
+### 🔄 **Archiving Control**
+
+#### Starting Archiving
+1. Configure **Max File Size** (default: 50MB)
+2. Choose **File Handling**: Skip or Download large files
+3. Click **"Start Archiving"** to begin
+4. Monitor progress in real-time with live logs
+
+#### Monitoring Progress
+- **Progress Bar**: Visual completion percentage
+- **Current Channel**: See which channel is being processed
+- **Live Logs**: Terminal-style output with timestamps
+- **Statistics**: Processed vs. total channels
+
+### 🔍 **Searching Archives**
+
+#### Basic Search
+1. Use the search bar in the navigation or go to the Search page
+2. Enter keywords to find across all channels
+3. Optionally filter by specific channel
+4. View highlighted results with context
+
+#### Advanced Features
+- **Case-insensitive**: Search works regardless of capitalization
+- **Multi-word**: Search for phrases or multiple keywords
+- **Media filtering**: Find messages with specific media types
+- **Export results**: Save search results for analysis
+
+### 🎨 **Customization**
+
+#### Theme Switching
+- Click the **theme toggle button** in the navigation
+- Supports both light and dark modes
+- Preference saved automatically
+
+#### Font Customization
+- Custom OperatorMono font included
+- Fallback to system monospace fonts
+- Optimized for readability and code display
+
+## 📁 Project Structure
+
+```
+telegram-archive-browser/
+├── 📄 web_frontend.py          # Main Flask application
+├── 📄 telegram_archiver.py     # Core archiving functionality
+├── 📄 monitor_control.py       # Process monitoring and control
+├── 📄 run_archiver.py          # Archiving script runner
+├── 📄 config.json              # Configuration file
+├── 📁 templates/               # HTML templates
+│   ├── 📄 base.html            # Base template with navigation
+│   ├── 📄 index.html           # Dashboard and channel management
+│   ├── 📄 search.html          # Search interface
+│   ├── 📄 channel.html         # Channel file listings
+│   └── 📄 view.html            # File viewer with media support
+├── 📁 static/                  # Static assets
+│   ├── 📁 css/
+│   │   └── 📄 style.css        # Custom Tailwind CSS styles
+│   ├── 📁 fonts/
+│   │   └── 📄 OperatorMonoLig-Book.otf  # Custom font
+│   └── 📁 js/
+│       └── 📄 app.js           # Frontend JavaScript
+└── 📁 archived_channels/       # Archived content storage
+    └── 📁 [Channel Name]/
+        ├── 📄 [Channel]_[Date].md     # Markdown archives
+        ├── 📄 [Channel]_[Date]_metadata.json  # Metadata
+        └── 📁 media/               # Downloaded media files
+```
+
+## ⚙️ Configuration
+
+### API Credentials
+```json
+{
+  "api_credentials": {
+    "api_id": "your_api_id",
+    "api_hash": "your_api_hash",
+    "session_name": "telegram_archiver"
+  }
+}
+```
+
+### Channel Configuration
 ```json
 {
   "channels": [
     {
-      "identifier": "@channelname",
-      "name": "Channel Name",
+      "identifier": "https://t.me/channelname",
+      "name": "Display Name",
       "enabled": true
     }
   ]
 }
 ```
 
-### 3. Choose Your Mode
+### Archive Settings
+```json
+{
+  "archive_settings": {
+    "messages_per_channel": 100,
+    "days_back": 7,
+    "output_directory": "archived_channels",
+    "download_media": true
+  }
+}
+```
 
-#### 📚 Batch Archive (one-time)
+## 🔧 Advanced Features
+
+### Smart File Handling
+- **Size Limits**: Configure maximum file size for downloads
+- **Skip Large Files**: Automatically skip files exceeding limits
+- **Media Organization**: Automatic folder structure for media files
+- **Format Support**: Images, videos, documents, and audio files
+
+### Real-time Monitoring
+- **Live Progress**: Real-time updates during archiving
+- **Process Control**: Start/stop archiving from the web interface
+- **Error Handling**: Graceful recovery from network issues
+- **Logging**: Comprehensive logs with timestamps
+
+### Performance Optimization
+- **Lazy Loading**: Efficient loading of large archive lists
+- **Caching**: Smart caching for faster page loads
+- **Compression**: Optimized assets and images
+- **Responsive**: Adaptive layouts for all screen sizes
+
+## 🎨 UI/UX Features
+
+### Design System
+- **Glass Morphism**: Modern translucent design elements
+- **Gradient Accents**: Beautiful color transitions
+- **Micro-interactions**: Smooth hover effects and animations
+- **Typography**: Custom OperatorMono font for elegance
+
+### Accessibility
+- **Keyboard Navigation**: Full keyboard support
+- **Screen Reader**: Proper ARIA labels and semantic HTML
+- **Color Contrast**: WCAG compliant color schemes
+- **Focus Management**: Clear focus indicators
+
+### Mobile Experience
+- **Touch Friendly**: Large touch targets and gestures
+- **Responsive Grid**: Adaptive layouts for all devices
+- **Mobile Navigation**: Collapsible menu for small screens
+- **Performance**: Optimized for mobile networks
+
+## 🛠️ Development
+
+### Local Development
 ```bash
-# Archive recent messages from all channels
-python run_archiver.py
+# Install development dependencies
+pip install -r requirements.txt
+
+# Run in development mode
+python web_frontend.py
+
+# Access at http://localhost:5000
 ```
 
-#### 🎧 Real-Time Monitoring (continuous)
-```bash
-# Start monitoring (runs in background)
-python monitor_control.py start
+### Customization
+- **Themes**: Modify CSS variables for custom colors
+- **Fonts**: Replace OperatorMono with your preferred font
+- **Layout**: Adjust Tailwind classes for different layouts
+- **Features**: Extend API endpoints for additional functionality
 
-# Check status
-python monitor_control.py status
+## 📊 API Reference
 
-# Stop monitoring
-python monitor_control.py stop
-```
+### Channel Management
+- `GET /api/channels` - Get all channels
+- `POST /api/channels` - Add new channel
+- `PUT /api/channels/{index}` - Update channel
+- `DELETE /api/channels/{index}` - Delete channel
 
-## 📁 Output Structure
+### Archiving Control
+- `POST /api/archiving/start` - Start archiving process
+- `POST /api/archiving/stop` - Stop archiving process
+- `GET /api/archiving/status` - Get archiving status
 
-### Batch Archive
-```
-archived_channels/
-├── Channel_Name/
-│   ├── media/
-│   │   ├── msg_123.jpg
-│   │   └── msg_124.mp4
-│   ├── Channel_Name_2024-01-15_14-30-00.md
-│   └── Channel_Name_2024-01-15_14-30-00_metadata.json
-```
+### Settings
+- `GET /api/settings` - Get archive settings
+- `POST /api/settings` - Update archive settings
 
-### Live Monitor
-```
-live_archive/
-├── Channel_Name/
-│   ├── media/
-│   │   ├── msg_456.jpg
-│   │   └── msg_457.pdf
-│   └── Channel_Name_2024-01-15_live.md
-```
+## 🔒 Security
 
-## ⚙️ Configuration Options
+### Best Practices
+- **API Credentials**: Stored securely in config.json
+- **Input Validation**: All user inputs validated and sanitized
+- **CSRF Protection**: Forms protected against cross-site requests
+- **Error Handling**: Sensitive information not exposed in errors
 
-| Setting | Description | Default |
-|---------|-------------|---------|
-| `messages_per_channel` | Max messages per batch archive | 100 |
-| `days_back` | Days back for batch archive | 7 |
-| `download_media` | Download images/videos/docs | true |
+### Privacy
+- **Local Storage**: All data stored locally on your machine
+- **No Tracking**: No analytics or tracking scripts
+- **Secure Sessions**: Telegram sessions handled securely
+- **Data Control**: Full control over your archived data
 
-## 🎯 Use Cases
+## 🤝 Contributing
 
-### 📊 Research & Analysis
-- Archive channels for later analysis
-- Download media for offline viewing
-- Track message patterns over time
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
-### 🔔 Real-Time Alerts
-- Monitor important channels live
-- Never miss critical updates
-- Automatic backup of all content
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-### 📱 Content Curation
-- Collect content from multiple sources
-- Organize by channel and date
-- Search through markdown files easily
+## 📄 License
 
-## 🛠️ Commands Reference
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Batch Archiver
-```bash
-python run_archiver.py          # Archive all enabled channels
-python test_setup.py            # Test your setup
-```
+## 🙏 Acknowledgments
 
-### Real-Time Monitor
-```bash
-python monitor_control.py start    # Start monitoring
-python monitor_control.py stop     # Stop monitoring
-python monitor_control.py status   # Show status & stats
-python monitor_control.py logs     # Show recent activity
-python monitor_control.py restart  # Restart monitoring
-```
+- **Telethon** - Telegram client library
+- **Flask** - Web framework
+- **Tailwind CSS** - Utility-first CSS framework
+- **OperatorMono** - Beautiful monospace font
+- **Heroicons** - Beautiful SVG icons
 
-### Direct Monitor (advanced)
-```bash
-python telegram_monitor.py      # Run monitor directly (foreground)
-```
+## 📞 Support
 
-## 📋 Requirements
+- **Issues**: [GitHub Issues](https://github.com/yourusername/telegram-archive-browser/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/telegram-archive-browser/discussions)
+- **Documentation**: [Wiki](https://github.com/yourusername/telegram-archive-browser/wiki)
 
-- Python 3.7+
-- Telethon library
-- Telegram API credentials (user application, not bot)
+---
 
-## 🔒 Privacy & Security
+<div align="center">
 
-- Uses official Telegram API
-- No data sent to third parties
-- All files stored locally
-- Session files encrypted by Telethon
+**Built with ❤️ for secure and elegant Telegram archiving**
 
-## 🆘 Troubleshooting
+[⭐ Star this repo](https://github.com/yourusername/telegram-archive-browser) | [🐛 Report Bug](https://github.com/yourusername/telegram-archive-browser/issues) | [💡 Request Feature](https://github.com/yourusername/telegram-archive-browser/issues)
 
-### Common Issues
-
-**"Could not find the input entity"**
-- Ensure you're a member of the channel
-- Check channel identifier format
-- For private channels, use full invite link
-
-**"API access restricted"**
-- Make sure you're using user application credentials (not bot)
-- Get credentials from my.telegram.org/apps
-
-**Monitor not starting**
-- Check if already running: `python monitor_control.py status`
-- Verify config.json is valid
-- Check API credentials
-
-### Getting Help
-
-1. Run `python test_setup.py` to verify setup
-2. Check console output for specific errors
-3. Verify channel access in Telegram app
-4. Ensure API credentials are correct
-
-## 🔄 Automation Ideas
-
-- **Cron jobs**: Schedule batch archives
-- **Systemd service**: Run monitor as system service  
-- **Docker**: Containerized deployment
-- **GitHub Actions**: Cloud-based automation
-
-Example systemd service:
-```ini
-[Unit]
-Description=Telegram Channel Monitor
-After=network.target
-
-[Service]
-Type=simple
-User=your-user
-WorkingDirectory=/path/to/archiver
-ExecStart=/path/to/venv/bin/python telegram_monitor.py
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-## 📈 Future Enhancements
-
-- Web dashboard for monitoring
-- Message filtering and search
-- Export to different formats
-- Integration with databases
-- Webhook notifications
+</div>
