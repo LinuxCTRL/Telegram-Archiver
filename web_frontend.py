@@ -393,6 +393,10 @@ class ArchiveManager:
                 self.archiving_status["logs"].append("✅ Archiving completed successfully!")
                 self.archiving_status["progress"] = 100
                 self.archiving_status["current_channel"] = "Completed"
+                
+                # Refresh archive directories to pick up new files
+                self._refresh_archive_dirs()
+                self.archiving_status["logs"].append("🔄 Archive directories refreshed")
             else:
                 self.archiving_status["logs"].append(f"❌ Archiving failed with return code: {return_code}")
                 self.archiving_status["error"] = f"Process exited with code {return_code}"
@@ -404,6 +408,11 @@ class ArchiveManager:
         finally:
             self.archiving_status["running"] = False
             self.archiving_process = None
+    
+    def _refresh_archive_dirs(self):
+        """Refresh the archive directories list to pick up new folders."""
+        archive_dirs = ["archived_channels", "live_archive"]
+        self.archive_dirs = [Path(d) for d in archive_dirs if Path(d).exists()]
 
 
 # Initialize Flask app
@@ -548,6 +557,27 @@ def api_stop_archiving():
 def api_archiving_status():
     """API endpoint to get archiving status."""
     return jsonify(archive_manager.get_archiving_status())
+
+
+@app.route('/api/refresh', methods=['POST'])
+def api_refresh_data():
+    """API endpoint to refresh archive data."""
+    try:
+        # Refresh archive directories
+        archive_manager._refresh_archive_dirs()
+        
+        # Get updated stats
+        stats = archive_manager.get_stats()
+        channels = archive_manager.get_all_channels()
+        
+        return jsonify({
+            "success": True,
+            "message": "Data refreshed successfully",
+            "stats": stats,
+            "channels": len(channels)
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)})
 
 
 @app.route('/api/channels')

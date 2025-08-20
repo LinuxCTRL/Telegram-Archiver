@@ -515,10 +515,36 @@ function refreshStats() {
     `;
     button.disabled = true;
     
-    // Reload the page to refresh statistics
-    setTimeout(() => {
-        window.location.reload();
-    }, 500);
+    // Use the new refresh function instead of page reload
+    refreshPageData().finally(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    });
+}
+
+async function refreshPageData() {
+    try {
+        // Call the refresh API endpoint
+        const response = await fetch('/api/refresh', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Reload the page to show updated data
+            window.location.reload();
+        } else {
+            throw new Error(result.error || 'Failed to refresh data');
+        }
+        
+    } catch (error) {
+        console.error('Error refreshing data:', error);
+        showNotification(`Failed to refresh data: ${error.message}`, 'error');
+    }
 }
 
 function showArchiveInfo() {
@@ -621,6 +647,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Archiving Control Functions
 let statusCheckInterval = null;
+let wasArchivingRunning = false;
 
 async function startArchiving() {
     const maxFileSize = document.getElementById('maxFileSize').value;
@@ -829,6 +856,16 @@ function updateLogs(status) {
 function updateButtonStates(status) {
     const startBtn = document.getElementById('startArchivingBtn');
     const stopBtn = document.getElementById('stopArchivingBtn');
+    
+    // Check if archiving just completed
+    if (wasArchivingRunning && !status.running && status.progress === 100) {
+        // Archiving just completed, refresh the page data
+        showNotification('Archiving completed! Refreshing data...', 'success');
+        setTimeout(() => {
+            refreshPageData();
+        }, 2000); // Wait 2 seconds for files to be fully written
+    }
+    wasArchivingRunning = status.running;
     
     if (status.running) {
         startBtn.disabled = true;
