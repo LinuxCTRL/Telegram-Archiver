@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block title %}Search - Telegram Archive Browser{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="mb-8">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold gradient-text mb-4">
+            Search Archive Messages
+        </h1>
+        <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+            Find specific content across all your archived Telegram channels
+        </p>
+    </div>
+</div>
+
+<!-- Search Form -->
+<div class="glass-card mb-8">
+    <div class="p-6 border-b border-slate-200/60">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-telegram-500 to-telegram-600 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800">Search Messages</h2>
+        </div>
+    </div>
+    <div class="p-6">
+        <form method="GET" action="{{ url_for('search') }}" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <!-- Search Query -->
+                <div class="lg:col-span-6">
+                    <label for="query" class="block text-sm font-medium text-slate-700 mb-2">Search Query</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
+                        <input type="text" id="query" name="q" 
+                               value="{{ query }}" 
+                               placeholder="Enter keywords to search..." 
+                               autofocus
+                               class="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-telegram-500 focus:border-transparent transition-all font-operator">
+                    </div>
+                </div>
+                
+                <!-- Channel Filter -->
+                <div class="lg:col-span-4">
+                    <label for="channel" class="block text-sm font-medium text-slate-700 mb-2">Channel (Optional)</label>
+                    <select id="channel" name="channel" 
+                            class="block w-full px-3 py-3 border border-slate-200 rounded-lg bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-telegram-500 focus:border-transparent transition-all font-operator">
+                        <option value="">All Channels</option>
+                        {% for ch in channels %}
+                        <option value="{{ ch.name }}" {% if ch.name == channel %}selected{% endif %}>
+                            {{ ch.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Search Button -->
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-transparent mb-2">Search</label>
+                    <button type="submit" 
+                            class="w-full inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-telegram-500 to-telegram-600 hover:from-telegram-600 hover:to-telegram-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:transform hover:-translate-y-0.5">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Search Results -->
+{% if query %}
+<div class="glass-card">
+    <div class="p-6 border-b border-slate-200/60">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Search Results</h2>
+            </div>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-telegram-100 text-telegram-800">
+                {{ results|length }} results
+            </span>
+        </div>
+    </div>
+    
+    {% if results %}
+    <div class="divide-y divide-slate-200">
+        {% for result in results %}
+        <div class="p-6 hover:bg-slate-50/50 transition-colors">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-4 lg:space-y-0 lg:space-x-4">
+                <div class="flex-1 min-w-0">
+                    <!-- Message Metadata -->
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                            {{ result.channel }}
+                        </span>
+                        <span class="inline-flex items-center text-xs text-slate-500">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ result.date }}
+                        </span>
+                        <span class="inline-flex items-center text-xs text-slate-500">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            {{ result.sender }}
+                        </span>
+                        {% if result.has_media %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            {{ result.media_type }}
+                        </span>
+                        {% endif %}
+                        <span class="inline-flex items-center text-xs text-slate-400">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/>
+                            </svg>
+                            {{ result.message_id }}
+                        </span>
+                    </div>
+                    
+                    <!-- Message Content -->
+                    <div class="message-content prose prose-sm max-w-none">
+                        {{ result.content | safe }}
+                    </div>
+                </div>
+                
+                <!-- Action Button -->
+                <div class="flex-shrink-0">
+                    <button onclick="showFullMessage('{{ result.channel }}', '{{ result.message_id }}', {{ result.full_content | tojson }})" 
+                            class="inline-flex items-center px-3 py-2 text-sm font-medium text-telegram-600 bg-telegram-50 rounded-lg hover:bg-telegram-100 transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                        </svg>
+                        View Full
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900 mb-2">No Results Found</h3>
+        <p class="text-slate-600 mb-4">
+            No messages found matching "{{ query }}"
+            {% if channel %}in {{ channel }}{% endif %}.
+        </p>
+        <div class="inline-flex items-center px-4 py-2 bg-blue-50 rounded-lg">
+            <svg class="w-4 h-4 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="text-sm text-blue-700">Try different keywords or search all channels</span>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% else %}
+<!-- Search Tips -->
+<div class="glass-card">
+    <div class="p-6 border-b border-slate-200/60">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800">Search Tips</h2>
+        </div>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900 mb-4">Search Examples:</h3>
+                <div class="space-y-3">
+                    <div class="flex items-start space-x-3">
+                        <code class="px-2 py-1 bg-slate-100 text-slate-800 rounded text-sm font-mono">vulnerability</code>
+                        <span class="text-sm text-slate-600">Find security vulnerabilities</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <code class="px-2 py-1 bg-slate-100 text-slate-800 rounded text-sm font-mono">CVE-2024</code>
+                        <span class="text-sm text-slate-600">Find specific CVE mentions</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <code class="px-2 py-1 bg-slate-100 text-slate-800 rounded text-sm font-mono">python script</code>
+                        <span class="text-sm text-slate-600">Find Python-related content</span>
+                    </div>
+                    <div class="flex items-start space-x-3">
+                        <code class="px-2 py-1 bg-slate-100 text-slate-800 rounded text-sm font-mono">malware analysis</code>
+                        <span class="text-sm text-slate-600">Find malware discussions</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900 mb-4">Features:</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-slate-600">Case-insensitive search</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-slate-600">Search across all channels</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-slate-600">Filter by specific channel</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-slate-600">Highlighted search terms</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Full Message Modal -->
+<div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="glass-card max-w-4xl max-h-[80vh] mx-4 w-full flex flex-col">
+        <div class="p-6 border-b border-slate-200/60 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-slate-900">Full Message</h3>
+            <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
+            <div id="messageContent" class="message-content"></div>
+        </div>
+        <div class="p-6 border-t border-slate-200/60 flex justify-end">
+            <button onclick="closeModal()" 
+                    class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function showFullMessage(channel, messageId, content) {
+    document.getElementById('messageContent').innerHTML = `
+        <div class="mb-4 flex flex-wrap gap-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">
+                ${channel}
+            </span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-telegram-100 text-telegram-800">
+                Message ${messageId}
+            </span>
+        </div>
+        <div class="message-full-content prose prose-sm max-w-none">
+            ${content.replace(/\n/g, '<br>')}
+        </div>
+    `;
+    
+    document.getElementById('messageModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+    document.getElementById('messageModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Auto-focus search input
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('query');
+    if (searchInput && !searchInput.value) {
+        searchInput.focus();
+    }
+    
+    // Close modal on background click
+    const modal = document.getElementById('messageModal');
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+    
+    // Add smooth scrolling
+    document.documentElement.style.scrollBehavior = 'smooth';
+    
+    // Enhanced search form submission
+    const searchForm = document.querySelector('form');
+    searchForm.addEventListener('submit', function(e) {
+        const query = document.getElementById('query').value.trim();
+        if (!query) {
+            e.preventDefault();
+            document.getElementById('query').focus();
+            
+            // Show a subtle hint
+            const queryInput = document.getElementById('query');
+            queryInput.classList.add('ring-2', 'ring-red-300', 'border-red-300');
+            queryInput.placeholder = 'Please enter a search term...';
+            
+            setTimeout(() => {
+                queryInput.classList.remove('ring-2', 'ring-red-300', 'border-red-300');
+                queryInput.placeholder = 'Enter keywords to search...';
+            }, 3000);
+        }
+    });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl+K to focus search
+    if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('query').focus();
+    }
+    
+    // Ctrl+Enter to submit search
+    if (e.ctrlKey && e.key === 'Enter') {
+        const form = document.querySelector('form');
+        form.submit();
+    }
+});
+
+// Add loading state to search button
+function addLoadingState() {
+    const submitButton = document.querySelector('button[type="submit"]');
+    const originalHTML = submitButton.innerHTML;
+    
+    submitButton.innerHTML = `
+        <svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Searching...
+    `;
+    submitButton.disabled = true;
+    
+    // Re-enable after a delay (in case of quick results)
+    setTimeout(() => {
+        submitButton.innerHTML = originalHTML;
+        submitButton.disabled = false;
+    }, 2000);
+}
+
+// Add loading state on form submission
+document.querySelector('form').addEventListener('submit', addLoadingState);
+</script>
+{% endblock %}

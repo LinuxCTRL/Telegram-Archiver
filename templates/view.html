@@ -1,0 +1,374 @@
+{% extends "base.html" %}
+
+{% block title %}{{ file_name }} - {{ channel_name }} - Telegram Archive Browser{% endblock %}
+
+{% block content %}
+<!-- File Header -->
+<div class="glass-card mb-8">
+    <div class="p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div>
+                <!-- Breadcrumb -->
+                <nav class="flex mb-4" aria-label="Breadcrumb">
+                    <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                        <li class="inline-flex items-center">
+                            <a href="{{ url_for('index') }}" class="inline-flex items-center text-sm font-medium text-slate-700 hover:text-telegram-600 transition-colors">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+                                </svg>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <a href="{{ url_for('channel_detail', channel_name=channel_name) }}" class="ml-1 text-sm font-medium text-slate-700 hover:text-telegram-600 transition-colors md:ml-2">{{ channel_name }}</a>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="flex items-center">
+                                <svg class="w-6 h-6 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="ml-1 text-sm font-medium text-slate-500 md:ml-2">{{ file_name }}</span>
+                            </div>
+                        </li>
+                    </ol>
+                </nav>
+                
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h1 class="text-2xl font-bold text-slate-900 truncate">{{ file_name }}</h1>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleView()" class="inline-flex items-center px-3 py-2 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                    <span id="viewToggleText">Raw</span>
+                </button>
+                <button onclick="copyContent()" class="inline-flex items-center px-3 py-2 text-sm font-medium text-telegram-600 bg-telegram-50 rounded-lg hover:bg-telegram-100 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    Copy
+                </button>
+                <button onclick="downloadFile()" class="inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- File Content -->
+<div class="glass-card">
+    <div class="p-6">
+        <!-- Rendered Content -->
+        <div id="renderedContent" class="markdown-content">
+            {{ content | safe }}
+        </div>
+        
+        <!-- Raw Content (hidden by default) -->
+        <div id="rawContent" class="hidden">
+            <pre class="bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono"><code>{{ raw_content }}</code></pre>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden textarea for copying -->
+<textarea id="copyTextarea" class="absolute -left-[9999px]">{{ raw_content }}</textarea>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Enhanced markdown content styling with Tailwind-compatible approach */
+.markdown-content {
+    @apply font-operator text-base leading-relaxed text-slate-800;
+}
+
+.markdown-content h1 {
+    @apply text-3xl font-bold text-telegram-600 mb-6 mt-8 pb-3 border-b-2 border-slate-200;
+}
+
+.markdown-content h2 {
+    @apply text-2xl font-semibold text-telegram-600 mb-4 mt-6 pb-2 border-b border-slate-200;
+}
+
+.markdown-content h3 {
+    @apply text-xl font-semibold text-slate-700 mb-3 mt-5;
+}
+
+.markdown-content h4 {
+    @apply text-lg font-medium text-slate-700 mb-2 mt-4;
+}
+
+.markdown-content p {
+    @apply mb-4 leading-relaxed;
+}
+
+.markdown-content strong {
+    @apply font-semibold text-slate-900;
+}
+
+.markdown-content em {
+    @apply italic text-slate-600;
+}
+
+.markdown-content code {
+    @apply bg-slate-100 text-slate-800 px-2 py-1 rounded text-sm font-mono;
+}
+
+.markdown-content pre {
+    @apply bg-slate-900 text-green-400 p-4 rounded-lg overflow-x-auto text-sm font-mono my-4;
+}
+
+.markdown-content pre code {
+    @apply bg-transparent text-inherit p-0;
+}
+
+.markdown-content blockquote {
+    @apply border-l-4 border-telegram-500 pl-4 py-2 my-4 bg-slate-50 rounded-r italic text-slate-600;
+}
+
+.markdown-content ul, .markdown-content ol {
+    @apply mb-4 pl-6;
+}
+
+.markdown-content li {
+    @apply mb-2;
+}
+
+.markdown-content table {
+    @apply w-full border-collapse my-6 rounded-lg overflow-hidden shadow-sm;
+}
+
+.markdown-content table th {
+    @apply bg-telegram-500 text-white font-semibold p-3 text-left;
+}
+
+.markdown-content table td {
+    @apply border-b border-slate-200 p-3 bg-white;
+}
+
+.markdown-content table tr:nth-child(even) td {
+    @apply bg-slate-50;
+}
+
+.markdown-content a {
+    @apply text-telegram-600 hover:text-telegram-700 font-medium transition-colors;
+}
+
+.markdown-content a:hover {
+    @apply underline;
+}
+
+/* Message dividers */
+.markdown-content hr {
+    @apply my-8 border-0 border-t-2 border-slate-200;
+}
+
+/* Enhanced media links */
+.markdown-content .media-link {
+    @apply inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg text-blue-700 font-medium transition-all hover:from-blue-100 hover:to-purple-100 hover:border-telegram-500 hover:text-telegram-600 no-underline hover:shadow-md my-2 mr-2;
+}
+
+.markdown-content .media-link::before {
+    content: "📎";
+    @apply mr-2;
+}
+
+/* Specific media type icons */
+.markdown-content a[href*=".jpg"]::before,
+.markdown-content a[href*=".jpeg"]::before,
+.markdown-content a[href*=".png"]::before,
+.markdown-content a[href*=".gif"]::before,
+.markdown-content a[href*=".webp"]::before {
+    content: "🖼️";
+}
+
+.markdown-content a[href*=".mp4"]::before,
+.markdown-content a[href*=".webm"]::before,
+.markdown-content a[href*=".avi"]::before {
+    content: "🎬";
+}
+
+.markdown-content a[href*=".pdf"]::before {
+    content: "📄";
+}
+
+.markdown-content a[href*=".mp3"]::before,
+.markdown-content a[href*=".wav"]::before,
+.markdown-content a[href*=".ogg"]::before {
+    content: "🎵";
+}
+
+/* Image preview styling */
+.markdown-content img {
+    @apply max-w-full h-auto rounded-lg shadow-md my-4 border border-slate-200 transition-transform hover:scale-105;
+}
+
+/* Message metadata styling */
+.markdown-content p:has(strong:contains("Message ID")),
+.markdown-content p:has(strong:contains("Date")),
+.markdown-content p:has(strong:contains("Sender")) {
+    @apply text-sm text-slate-600 bg-slate-50 px-3 py-1 rounded mb-2;
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+let isRawView = false;
+
+function toggleView() {
+    const renderedContent = document.getElementById('renderedContent');
+    const rawContent = document.getElementById('rawContent');
+    const toggleText = document.getElementById('viewToggleText');
+    
+    if (isRawView) {
+        renderedContent.classList.remove('hidden');
+        rawContent.classList.add('hidden');
+        toggleText.textContent = 'Raw';
+        isRawView = false;
+    } else {
+        renderedContent.classList.add('hidden');
+        rawContent.classList.remove('hidden');
+        toggleText.textContent = 'Rendered';
+        isRawView = true;
+    }
+}
+
+function copyContent() {
+    const textarea = document.getElementById('copyTextarea');
+    textarea.select();
+    textarea.setSelectionRange(0, 99999); // For mobile devices
+    
+    try {
+        document.execCommand('copy');
+        
+        // Show success feedback
+        const btn = event.target.closest('button');
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Copied!
+        `;
+        btn.className = 'inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg transition-colors';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.className = 'inline-flex items-center px-3 py-2 text-sm font-medium text-telegram-600 bg-telegram-50 rounded-lg hover:bg-telegram-100 transition-colors';
+        }, 2000);
+    } catch (err) {
+        // Fallback for modern browsers
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            const btn = event.target.closest('button');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Copied!
+            `;
+            btn.className = 'inline-flex items-center px-3 py-2 text-sm font-medium text-green-600 bg-green-50 rounded-lg transition-colors';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.className = 'inline-flex items-center px-3 py-2 text-sm font-medium text-telegram-600 bg-telegram-50 rounded-lg hover:bg-telegram-100 transition-colors';
+            }, 2000);
+        }).catch(() => {
+            alert('Failed to copy content');
+        });
+    }
+}
+
+function downloadFile() {
+    const content = document.getElementById('copyTextarea').value;
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '{{ file_name }}';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    window.URL.revokeObjectURL(url);
+}
+
+// Enhanced media link handling
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle all media links
+    const mediaLinks = document.querySelectorAll('a[href*="/media/"]');
+    mediaLinks.forEach(link => {
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        
+        // Add click handler for image preview
+        if (link.href.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                showImagePreview(this.href, this.textContent);
+            });
+        }
+    });
+    
+    // Add smooth scrolling
+    document.documentElement.style.scrollBehavior = 'smooth';
+});
+
+function showImagePreview(imageUrl, imageName) {
+    // Create modal for image preview
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4';
+    modal.innerHTML = `
+        <div class="relative max-w-4xl max-h-full">
+            <button onclick="this.closest('.fixed').remove()" 
+                    class="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+            <img src="${imageUrl}" alt="${imageName}" 
+                 class="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                 onload="this.style.opacity='1'" style="opacity:0; transition: opacity 0.3s;">
+            <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-4 rounded-b-lg">
+                <p class="text-sm font-medium">${imageName}</p>
+                <a href="${imageUrl}" download class="text-blue-300 hover:text-blue-200 text-sm">Download original</a>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Close on background click
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+    
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            modal.remove();
+        }
+    }, { once: true });
+}
+</script>
+{% endblock %}

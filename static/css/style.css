@@ -1,0 +1,251 @@
+/* Custom styles for Telegram Archive Browser with Tailwind CSS */
+
+/* Custom Font */
+@font-face {
+    font-family: 'OperatorMono';
+    src: url('../fonts/OperatorMonoLig-Book.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* Custom component styles that extend Tailwind */
+.glass-card {
+    @apply bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-white/20 dark:border-slate-700/20 shadow-xl rounded-xl transition-colors duration-300;
+}
+
+.glass-card-dark {
+    @apply bg-slate-800/70 backdrop-blur-md border border-slate-700/20 shadow-xl rounded-xl;
+}
+
+.gradient-text {
+    @apply bg-gradient-to-r from-telegram-600 to-blue-600 bg-clip-text text-transparent;
+}
+
+.hover-lift {
+    @apply transition-all duration-300 hover:transform hover:-translate-y-1 hover:shadow-2xl;
+}
+
+/* Message content styling */
+.message-content {
+    @apply font-operator text-sm leading-relaxed text-slate-700 dark:text-slate-300;
+}
+
+.message-content code {
+    @apply bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-2 py-1 rounded text-xs font-mono;
+}
+
+.message-content pre {
+    @apply bg-slate-900 dark:bg-slate-800 text-green-400 dark:text-green-300 p-4 rounded-lg overflow-x-auto text-xs font-mono;
+}
+
+.message-content blockquote {
+    @apply border-l-4 border-telegram-500 pl-4 italic text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800 py-2 rounded-r;
+}
+
+/* Custom scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-slate-100 dark:bg-slate-700 rounded-full;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-300 dark:bg-slate-500 rounded-full hover:bg-slate-400 dark:hover:bg-slate-400;
+}
+
+/* Animation utilities */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Stats counter animation */
+.stat-counter {
+    @apply font-bold text-3xl font-operator;
+}
+
+/* Badge styles */
+.badge-live {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200;
+}
+
+.badge-batch {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200;
+}
+
+.badge-media {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200;
+}
+
+/* Search highlight */
+.search-highlight {
+    @apply bg-yellow-200 text-yellow-900 px-1 py-0.5 rounded font-semibold;
+}
+
+/* File type specific styles */
+.file-type-image {
+    @apply text-green-600;
+}
+
+.file-type-video {
+    @apply text-red-600;
+}
+
+.file-type-document {
+    @apply text-purple-600;
+}
+
+.file-type-audio {
+    @apply text-orange-600;
+}
+
+/* Media link styling */
+.media-link {
+    @apply inline-flex items-center px-3 py-2 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg text-blue-700 text-sm font-medium transition-all hover:from-blue-100 hover:to-purple-100 hover:border-telegram-500 hover:text-telegram-600 no-underline hover:shadow-md;
+}
+
+.media-link::before {
+    content: "📎";
+    @apply mr-2;
+}
+
+.media-link[href*=".jpg"]::before,
+.media-link[href*=".jpeg"]::before,
+.media-link[href*=".png"]::before,
+.media-link[href*=".gif"]::before,
+.media-link[href*=".webp"]::before {
+    content: "🖼️";
+}
+
+.media-link[href*=".mp4"]::before,
+.media-link[href*=".webm"]::before,
+.media-link[href*=".avi"]::before {
+    content: "🎬";
+}
+
+.media-link[href*=".pdf"]::before {
+    content: "📄";
+}
+
+.media-link[href*=".mp3"]::before,
+.media-link[href*=".wav"]::before,
+.media-link[href*=".ogg"]::before {
+    content: "🎵";
+}
+
+/* Markdown content styling */
+.markdown-content {
+    @apply font-operator text-base leading-relaxed text-slate-800;
+}
+
+.markdown-content h1 {
+    @apply text-3xl font-bold text-telegram-600 mb-4 mt-6;
+}
+
+.markdown-content h2 {
+    @apply text-2xl font-semibold text-telegram-600 mb-3 mt-5 pb-2 border-b border-slate-200;
+}
+
+.markdown-content h3 {
+    @apply text-xl font-semibold text-slate-700 mb-2 mt-4;
+}
+
+.markdown-content p {
+    @apply mb-4;
+}
+
+.markdown-content strong {
+    @apply font-semibold text-slate-900;
+}
+
+.markdown-content em {
+    @apply italic text-slate-600;
+}
+
+.markdown-content a {
+    @apply text-telegram-600 hover:text-telegram-700 font-medium transition-colors;
+}
+
+.markdown-content ul, .markdown-content ol {
+    @apply mb-4 pl-6;
+}
+
+.markdown-content li {
+    @apply mb-1;
+}
+
+.markdown-content img {
+    @apply max-w-full h-auto rounded-lg shadow-md my-4 border border-slate-200;
+}
+
+/* Table styling for compatibility */
+.table-hover tbody tr:hover {
+    @apply bg-telegram-50;
+}
+
+/* Loading animation */
+.loading-skeleton {
+    @apply bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 bg-[length:200%_100%] animate-pulse;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .glass-card {
+        @apply bg-slate-800/70 border-slate-700/20;
+    }
+    
+    .message-content {
+        @apply text-slate-200;
+    }
+    
+    .message-content code {
+        @apply bg-slate-700 text-slate-200;
+    }
+    
+    .message-content blockquote {
+        @apply bg-slate-800 text-slate-300;
+    }
+    
+    .search-highlight {
+        @apply bg-yellow-400 text-yellow-900;
+    }
+    
+    .markdown-content {
+        @apply text-slate-200;
+    }
+    
+    .markdown-content h1,
+    .markdown-content h2 {
+        @apply text-telegram-400;
+    }
+    
+    .markdown-content h3 {
+        @apply text-slate-300;
+    }
+    
+    .markdown-content strong {
+        @apply text-slate-100;
+    }
+}
+
+/* Custom utilities */
+.btn-telegram {
+    @apply bg-gradient-to-r from-telegram-500 to-telegram-600 hover:from-telegram-600 hover:to-telegram-700 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200 hover:shadow-lg hover:transform hover:-translate-y-0.5;
+}
+
+.btn-telegram-outline {
+    @apply border-2 border-telegram-500 text-telegram-600 hover:bg-telegram-500 hover:text-white font-medium px-4 py-2 rounded-lg transition-all duration-200;
+}

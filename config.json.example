@@ -1,0 +1,14 @@
+{
+  "api_credentials": {
+    "api_id": "API_ID",
+    "api_hash": "API_HASH",
+    "session_name": "telegram_archiver"
+  },
+  "channels": [],
+  "archive_settings": {
+    "messages_per_channel": 100,
+    "days_back": 7,
+    "output_directory": "archived_channels",
+    "download_media": true
+  }
+}

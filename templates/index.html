@@ -1,0 +1,1198 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Telegram Archive Browser{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="mb-12">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold gradient-text mb-4">
+            Telegram Archive Dashboard
+        </h1>
+        <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+            Secure, organized, and searchable archive of your Telegram channels
+        </p>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <!-- Channels Card -->
+    <div class="glass-card hover-lift p-6 animate-fade-in-up">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-600 mb-1">Channels</p>
+                <p class="stat-counter text-telegram-600">{{ stats.total_channels }}</p>
+            </div>
+            <div class="w-12 h-12 bg-gradient-to-br from-telegram-500 to-telegram-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Card -->
+    <div class="glass-card hover-lift p-6 animate-fade-in-up" style="animation-delay: 0.1s">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-600 mb-1">Messages</p>
+                <p class="stat-counter text-green-600">{{ "{:,}".format(stats.total_messages) }}</p>
+            </div>
+            <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Archive Files Card -->
+    <div class="glass-card hover-lift p-6 animate-fade-in-up" style="animation-delay: 0.2s">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-600 mb-1">Archive Files</p>
+                <p class="stat-counter text-blue-600">{{ stats.total_files }}</p>
+            </div>
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Media Files Card -->
+    <div class="glass-card hover-lift p-6 animate-fade-in-up" style="animation-delay: 0.3s">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm font-medium text-slate-600 mb-1">Media Files</p>
+                <p class="stat-counter text-purple-600">{{ "{:,}".format(stats.total_media) }}</p>
+            </div>
+            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Channel Management -->
+<div class="glass-card mb-8">
+    <div class="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">Channel Management</h2>
+            </div>
+            <button onclick="showAddChannelModal()" 
+                    class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:transform hover:-translate-y-0.5">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Add Channel
+            </button>
+        </div>
+    </div>
+    
+    <!-- Channels Table -->
+    <div class="overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full">
+                <thead class="bg-slate-50/80 dark:bg-slate-800/80">
+                    <tr class="border-b border-slate-200 dark:border-slate-700">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Channel</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Identifier</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="channels-table-body" class="divide-y divide-slate-200 dark:divide-slate-700">
+                    <!-- Channels will be populated here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Empty State -->
+    <div id="channels-empty-state" class="hidden p-12 text-center">
+        <div class="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z"/>
+            </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">No Channels Configured</h3>
+        <p class="text-slate-600 dark:text-slate-400 mb-4">
+            Add Telegram channels to start archiving their messages.
+        </p>
+        <button onclick="showAddChannelModal()" 
+                class="inline-flex items-center px-4 py-2 bg-telegram-500 text-white rounded-lg hover:bg-telegram-600 transition-colors">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Add Your First Channel
+        </button>
+    </div>
+</div>
+
+<!-- Channels List -->
+<div class="glass-card">
+    <div class="p-6 border-b border-slate-200/60">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-telegram-500 to-telegram-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Archived Channels</h2>
+            </div>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-telegram-100 text-telegram-800">
+                {{ channels|length }} channels
+            </span>
+        </div>
+    </div>
+    
+    {% if channels %}
+    <div class="overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full">
+                <thead class="bg-slate-50/80">
+                    <tr class="border-b border-slate-200">
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Channel</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Type</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Messages</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Files</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Media</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Last Update</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    {% for channel in channels %}
+                    <tr class="hover:bg-slate-50/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-telegram-500 to-telegram-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z"/>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="text-sm font-semibold text-slate-900 truncate">{{ channel.name }}</p>
+                                    <p class="text-xs text-slate-500 truncate">{{ channel.latest_file }}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if channel.archive_type == 'live_archive' %}
+                                <span class="badge-live">Live</span>
+                            {% else %}
+                                <span class="badge-batch">Batch</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm font-semibold text-slate-900">{{ "{:,}".format(channel.message_count) }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm font-medium text-slate-700">{{ channel.file_count }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if channel.media_count > 0 %}
+                                <span class="badge-media">{{ channel.media_count }}</span>
+                            {% else %}
+                                <span class="text-sm text-slate-400">None</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-slate-500">{{ channel.latest_update }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-2">
+                                <a href="{{ url_for('channel_detail', channel_name=channel.name) }}" 
+                                   class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-telegram-600 bg-telegram-50 rounded-lg hover:bg-telegram-100 transition-colors">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                    View
+                                </a>
+                                <a href="{{ url_for('search', channel=channel.name) }}" 
+                                   class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                    </svg>
+                                    Search
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="p-12 text-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+            </svg>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900 mb-2">No Archives Found</h3>
+        <p class="text-slate-600 mb-4">
+            Run the archiver to start collecting messages from your channels.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <code class="px-3 py-1 bg-slate-100 rounded text-sm">python run_archiver.py</code>
+            <span class="text-slate-400">or</span>
+            <code class="px-3 py-1 bg-slate-100 rounded text-sm">python monitor_control.py start</code>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Archiving Control Panel -->
+<div class="glass-card mt-8">
+    <div class="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">Archive Control</h2>
+            </div>
+            <div id="archiving-status-indicator" class="flex items-center space-x-2">
+                <div class="w-3 h-3 bg-gray-400 rounded-full animate-pulse"></div>
+                <span class="text-sm text-slate-600 dark:text-slate-400">Checking status...</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Control Panel -->
+    <div class="p-6">
+        <!-- Settings Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div>
+                <label for="maxFileSize" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Max File Size (MB)
+                </label>
+                <input type="number" id="maxFileSize" value="50" min="1" max="500"
+                       class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-telegram-500 focus:border-transparent transition-all text-slate-900 dark:text-slate-100">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Files larger than this will be skipped</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Large File Handling
+                </label>
+                <div class="flex items-center space-x-3">
+                    <label class="flex items-center">
+                        <input type="radio" name="fileHandling" value="skip" checked
+                               class="w-4 h-4 text-telegram-600 bg-gray-100 border-gray-300 focus:ring-telegram-500 dark:focus:ring-telegram-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">Skip</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="fileHandling" value="download"
+                               class="w-4 h-4 text-telegram-600 bg-gray-100 border-gray-300 focus:ring-telegram-500 dark:focus:ring-telegram-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                        <span class="ml-2 text-sm text-slate-700 dark:text-slate-300">Download</span>
+                    </label>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">How to handle files exceeding the size limit</p>
+            </div>
+            
+            <div class="flex items-end">
+                <div class="w-full space-y-2">
+                    <button id="startArchivingBtn" onclick="startArchiving()" 
+                            class="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:transform hover:-translate-y-0.5">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+                        </svg>
+                        Start Archiving
+                    </button>
+                    <button id="stopArchivingBtn" onclick="stopArchiving()" disabled
+                            class="w-full inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg hover:transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z"/>
+                        </svg>
+                        Stop Archiving
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progress Section -->
+        <div id="progress-section" class="hidden">
+            <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Archiving Progress</h3>
+                    <span id="progress-percentage" class="text-sm font-medium text-telegram-600 dark:text-telegram-400">0%</span>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3">
+                    <div id="progress-bar" class="bg-gradient-to-r from-telegram-500 to-blue-500 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                
+                <!-- Status Info -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z"/>
+                        </svg>
+                        <span class="text-slate-600 dark:text-slate-400">Current:</span>
+                        <span id="current-channel" class="font-medium text-slate-900 dark:text-slate-100">-</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-slate-600 dark:text-slate-400">Processed:</span>
+                        <span id="processed-channels" class="font-medium text-slate-900 dark:text-slate-100">0</span>
+                        <span class="text-slate-500 dark:text-slate-400">/</span>
+                        <span id="total-channels" class="font-medium text-slate-900 dark:text-slate-100">0</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-slate-600 dark:text-slate-400">Started:</span>
+                        <span id="start-time" class="font-medium text-slate-900 dark:text-slate-100">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Logs -->
+        <div id="logs-section" class="hidden mt-6">
+            <div class="bg-slate-900 dark:bg-slate-800 rounded-xl p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-green-400">Live Logs</h3>
+                    <button onclick="clearLogs()" class="text-xs text-slate-400 hover:text-slate-200 transition-colors">Clear</button>
+                </div>
+                <div id="logs-container" class="h-48 overflow-y-auto custom-scrollbar font-mono text-xs text-green-300 space-y-1">
+                    <!-- Logs will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="glass-card mt-8">
+    <div class="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 dark:text-slate-200">Quick Actions</h2>
+        </div>
+    </div>
+    <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="{{ url_for('search') }}" 
+               class="flex items-center p-4 bg-gradient-to-r from-telegram-50 to-blue-50 dark:from-telegram-900/20 dark:to-blue-900/20 rounded-xl border border-telegram-200 dark:border-telegram-700 hover:from-telegram-100 hover:to-blue-100 dark:hover:from-telegram-800/30 dark:hover:to-blue-800/30 transition-all hover:shadow-md group">
+                <div class="w-10 h-10 bg-telegram-500 rounded-lg flex items-center justify-center mr-4 group-hover:scale-105 transition-transform">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-slate-100">Search Messages</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Find specific content across all channels</p>
+                </div>
+            </a>
+            
+            <button onclick="refreshStats()" 
+                    class="flex items-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-700 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-800/30 dark:hover:to-emerald-800/30 transition-all hover:shadow-md group">
+                <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-4 group-hover:scale-105 transition-transform">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-slate-100">Refresh Data</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">Update statistics and channel info</p>
+                </div>
+            </button>
+            
+            <a href="#" onclick="showArchiveInfo()" 
+               class="flex items-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-700 hover:from-purple-100 hover:to-pink-100 dark:hover:from-purple-800/30 dark:hover:to-pink-800/30 transition-all hover:shadow-md group">
+                <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-4 group-hover:scale-105 transition-transform">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-slate-900 dark:text-slate-100">Archive Info</h3>
+                    <p class="text-sm text-slate-600 dark:text-slate-400">View system status and settings</p>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Channel Modal -->
+<div id="channelModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="glass-card max-w-md mx-4 w-full">
+        <div class="p-6 border-b border-slate-200/60 dark:border-slate-700/60">
+            <div class="flex items-center justify-between">
+                <h3 id="modalTitle" class="text-xl font-bold text-slate-900 dark:text-slate-100">Add Channel</h3>
+                <button onclick="closeChannelModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <form id="channelForm" class="p-6 space-y-4">
+            <div>
+                <label for="channelIdentifier" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Channel URL or Username
+                </label>
+                <input type="text" id="channelIdentifier" required
+                       placeholder="https://t.me/channelname or @channelname"
+                       class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-telegram-500 focus:border-transparent transition-all text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Enter the full Telegram URL or username with @</p>
+            </div>
+            
+            <div>
+                <label for="channelName" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    Display Name
+                </label>
+                <input type="text" id="channelName" required
+                       placeholder="Friendly name for the channel"
+                       class="w-full px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-telegram-500 focus:border-transparent transition-all text-slate-900 dark:text-slate-100 placeholder-slate-500 dark:placeholder-slate-400">
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">This name will be used in the interface</p>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <input type="checkbox" id="channelEnabled" checked
+                       class="w-4 h-4 text-telegram-600 bg-gray-100 border-gray-300 rounded focus:ring-telegram-500 dark:focus:ring-telegram-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                <label for="channelEnabled" class="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Enable archiving for this channel
+                </label>
+            </div>
+            
+            <div class="flex space-x-3 pt-4">
+                <button type="button" onclick="closeChannelModal()" 
+                        class="flex-1 px-4 py-2 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" id="submitChannelBtn"
+                        class="flex-1 px-4 py-2 bg-telegram-500 text-white rounded-lg hover:bg-telegram-600 transition-colors">
+                    Add Channel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function refreshStats() {
+    // Show loading state
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = `
+        <svg class="w-4 h-4 animate-spin mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Refreshing...
+    `;
+    button.disabled = true;
+    
+    // Reload the page to refresh statistics
+    setTimeout(() => {
+        window.location.reload();
+    }, 500);
+}
+
+function showArchiveInfo() {
+    // Create a modern modal-like notification
+    const notification = document.createElement('div');
+    notification.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    notification.innerHTML = `
+        <div class="glass-card max-w-md mx-4 p-6">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-8 h-8 bg-gradient-to-br from-telegram-500 to-telegram-600 rounded-lg flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900">Archive System Info</h3>
+            </div>
+            <div class="space-y-3 text-sm text-slate-600 mb-6">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                    <span>System Status: Active</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+                    <span>Font: OperatorMono (Custom)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    <span>UI Framework: Tailwind CSS</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 bg-orange-500 rounded-full"></span>
+                    <span>Archive Format: Markdown + JSON</span>
+                </div>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="this.closest('.fixed').remove()" 
+                        class="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+                    Close
+                </button>
+                <a href="{{ url_for('search') }}" 
+                   class="flex-1 px-4 py-2 bg-telegram-500 text-white rounded-lg hover:bg-telegram-600 transition-colors text-center">
+                    Search Archives
+                </a>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Close on background click
+    notification.addEventListener('click', function(e) {
+        if (e.target === notification) {
+            notification.remove();
+        }
+    });
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[name="q"]');
+        if (searchInput) {
+            searchInput.focus();
+        }
+    }
+    
+    if (e.key === 'Escape') {
+        // Close any open modals
+        const modals = document.querySelectorAll('.fixed.inset-0');
+        modals.forEach(modal => modal.remove());
+    }
+});
+
+// Add smooth scroll behavior for better UX
+document.documentElement.style.scrollBehavior = 'smooth';
+
+// Animate stats on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const statCounters = document.querySelectorAll('.stat-counter');
+    statCounters.forEach((counter, index) => {
+        const finalValue = counter.textContent;
+        counter.textContent = '0';
+        
+        setTimeout(() => {
+            counter.style.transition = 'all 0.8s ease-out';
+            counter.textContent = finalValue;
+        }, index * 100);
+    });
+    
+    // Initialize archiving status check
+    checkArchivingStatus();
+    
+    // Set up periodic status checking
+    setInterval(checkArchivingStatus, 2000); // Check every 2 seconds
+    
+    // Load channels on page load
+    loadChannels();
+});
+
+// Archiving Control Functions
+let statusCheckInterval = null;
+
+async function startArchiving() {
+    const maxFileSize = document.getElementById('maxFileSize').value;
+    const skipLargeFiles = document.querySelector('input[name="fileHandling"]:checked').value === 'skip';
+    
+    const startBtn = document.getElementById('startArchivingBtn');
+    const stopBtn = document.getElementById('stopArchivingBtn');
+    
+    // Update button states
+    startBtn.disabled = true;
+    startBtn.innerHTML = `
+        <svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Starting...
+    `;
+    
+    try {
+        const response = await fetch('/api/archiving/start', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                max_file_size_mb: parseInt(maxFileSize),
+                skip_large_files: skipLargeFiles
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success notification
+            showNotification('Archiving started successfully!', 'success');
+            
+            // Update UI
+            stopBtn.disabled = false;
+            document.getElementById('progress-section').classList.remove('hidden');
+            document.getElementById('logs-section').classList.remove('hidden');
+            
+            // Start more frequent status checking
+            if (statusCheckInterval) clearInterval(statusCheckInterval);
+            statusCheckInterval = setInterval(checkArchivingStatus, 1000);
+            
+        } else {
+            throw new Error(result.error || 'Failed to start archiving');
+        }
+        
+    } catch (error) {
+        console.error('Error starting archiving:', error);
+        showNotification(`Failed to start archiving: ${error.message}`, 'error');
+        
+        // Reset button
+        startBtn.disabled = false;
+        startBtn.innerHTML = `
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+            </svg>
+            Start Archiving
+        `;
+    }
+}
+
+async function stopArchiving() {
+    const startBtn = document.getElementById('startArchivingBtn');
+    const stopBtn = document.getElementById('stopArchivingBtn');
+    
+    stopBtn.disabled = true;
+    stopBtn.innerHTML = `
+        <svg class="w-5 h-5 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Stopping...
+    `;
+    
+    try {
+        const response = await fetch('/api/archiving/stop', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification('Archiving stopped successfully!', 'warning');
+            
+            // Reset UI
+            startBtn.disabled = false;
+            startBtn.innerHTML = `
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+                </svg>
+                Start Archiving
+            `;
+            
+            // Stop frequent checking
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+                statusCheckInterval = null;
+            }
+            
+        } else {
+            throw new Error(result.error || 'Failed to stop archiving');
+        }
+        
+    } catch (error) {
+        console.error('Error stopping archiving:', error);
+        showNotification(`Failed to stop archiving: ${error.message}`, 'error');
+    }
+    
+    stopBtn.disabled = true;
+    stopBtn.innerHTML = `
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z"/>
+        </svg>
+        Stop Archiving
+    `;
+}
+
+async function checkArchivingStatus() {
+    try {
+        const response = await fetch('/api/archiving/status');
+        const status = await response.json();
+        
+        updateStatusIndicator(status);
+        updateProgressDisplay(status);
+        updateLogs(status);
+        updateButtonStates(status);
+        
+    } catch (error) {
+        console.error('Error checking archiving status:', error);
+    }
+}
+
+function updateStatusIndicator(status) {
+    const indicator = document.getElementById('archiving-status-indicator');
+    
+    if (status.running) {
+        indicator.innerHTML = `
+            <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+            <span class="text-sm text-green-600 dark:text-green-400 font-medium">Archiving Active</span>
+        `;
+    } else if (status.error) {
+        indicator.innerHTML = `
+            <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+            <span class="text-sm text-red-600 dark:text-red-400 font-medium">Error</span>
+        `;
+    } else {
+        indicator.innerHTML = `
+            <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+            <span class="text-sm text-slate-600 dark:text-slate-400">Idle</span>
+        `;
+    }
+}
+
+function updateProgressDisplay(status) {
+    if (!status.running && !status.progress) {
+        document.getElementById('progress-section').classList.add('hidden');
+        return;
+    }
+    
+    document.getElementById('progress-section').classList.remove('hidden');
+    
+    // Update progress bar
+    const progressBar = document.getElementById('progress-bar');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progress = Math.round(status.progress || 0);
+    
+    progressBar.style.width = `${progress}%`;
+    progressPercentage.textContent = `${progress}%`;
+    
+    // Update status info
+    document.getElementById('current-channel').textContent = status.current_channel || '-';
+    document.getElementById('processed-channels').textContent = status.processed_channels || 0;
+    document.getElementById('total-channels').textContent = status.total_channels || 0;
+    
+    if (status.start_time) {
+        const startTime = new Date(status.start_time);
+        document.getElementById('start-time').textContent = startTime.toLocaleTimeString();
+    }
+}
+
+function updateLogs(status) {
+    if (!status.logs || status.logs.length === 0) return;
+    
+    document.getElementById('logs-section').classList.remove('hidden');
+    
+    const logsContainer = document.getElementById('logs-container');
+    const currentLogs = logsContainer.children.length;
+    const newLogs = status.logs.slice(currentLogs);
+    
+    newLogs.forEach(log => {
+        const logElement = document.createElement('div');
+        logElement.className = 'text-green-300 font-mono text-xs';
+        logElement.textContent = `[${new Date().toLocaleTimeString()}] ${log}`;
+        logsContainer.appendChild(logElement);
+    });
+    
+    // Auto-scroll to bottom
+    logsContainer.scrollTop = logsContainer.scrollHeight;
+}
+
+function updateButtonStates(status) {
+    const startBtn = document.getElementById('startArchivingBtn');
+    const stopBtn = document.getElementById('stopArchivingBtn');
+    
+    if (status.running) {
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
+        
+        if (!startBtn.innerHTML.includes('Starting')) {
+            startBtn.innerHTML = `
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+                </svg>
+                Archiving...
+            `;
+        }
+    } else {
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+        
+        if (!startBtn.innerHTML.includes('Start Archiving')) {
+            startBtn.innerHTML = `
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2z"/>
+                </svg>
+                Start Archiving
+            `;
+        }
+    }
+}
+
+function clearLogs() {
+    document.getElementById('logs-container').innerHTML = '';
+}
+
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+    
+    const colors = {
+        success: 'bg-green-500 text-white',
+        error: 'bg-red-500 text-white',
+        warning: 'bg-yellow-500 text-white',
+        info: 'bg-blue-500 text-white'
+    };
+    
+    notification.className += ` ${colors[type] || colors.info}`;
+    notification.innerHTML = `
+        <div class="flex items-center space-x-2">
+            <span>${message}</span>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Animate in
+    setTimeout(() => {
+        notification.classList.remove('translate-x-full');
+    }, 100);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('translate-x-full');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+// Channel Management Functions
+let editingChannelIndex = -1;
+
+async function loadChannels() {
+    try {
+        const response = await fetch('/api/channels');
+        const result = await response.json();
+        
+        if (result.success) {
+            displayChannels(result.channels);
+        } else {
+            console.error('Failed to load channels:', result.error);
+            showNotification('Failed to load channels', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading channels:', error);
+        showNotification('Error loading channels', 'error');
+    }
+}
+
+function displayChannels(channels) {
+    const tableBody = document.getElementById('channels-table-body');
+    const emptyState = document.getElementById('channels-empty-state');
+    
+    if (channels.length === 0) {
+        tableBody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+    }
+    
+    emptyState.classList.add('hidden');
+    
+    tableBody.innerHTML = channels.map((channel, index) => `
+        <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+            <td class="px-6 py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-telegram-500 to-telegram-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 011 1v16a1 1 0 01-1 1H3a1 1 0 01-1-1V5a1 1 0 011-1h4z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-900 dark:text-slate-100">${channel.name}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-6 py-4">
+                <code class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-2 py-1 rounded">${channel.identifier}</code>
+            </td>
+            <td class="px-6 py-4">
+                ${channel.enabled ? 
+                    '<span class="badge-live">Enabled</span>' : 
+                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">Disabled</span>'
+                }
+            </td>
+            <td class="px-6 py-4">
+                <div class="flex items-center space-x-2">
+                    <button onclick="editChannel(${index})" 
+                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Edit
+                    </button>
+                    <button onclick="toggleChannelStatus(${index})" 
+                            class="inline-flex items-center px-2 py-1 text-xs font-medium ${channel.enabled ? 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/40' : 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/40'} rounded transition-colors">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${channel.enabled ? 'M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z' : 'M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h8m-9-4h10a2 2 0 012 2v8a2 2 0 01-2 2H6a2 2 0 01-2-2v-8a2 2 0 012-2z'}"/>
+                        </svg>
+                        ${channel.enabled ? 'Disable' : 'Enable'}
+                    </button>
+                    <button onclick="deleteChannel(${index})" 
+                            class="inline-flex items-center px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors">
+                        <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function showAddChannelModal() {
+    editingChannelIndex = -1;
+    document.getElementById('modalTitle').textContent = 'Add Channel';
+    document.getElementById('submitChannelBtn').textContent = 'Add Channel';
+    document.getElementById('channelForm').reset();
+    document.getElementById('channelEnabled').checked = true;
+    document.getElementById('channelModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function editChannel(index) {
+    editingChannelIndex = index;
+    
+    // Load current channels to get the data
+    fetch('/api/channels')
+        .then(response => response.json())
+        .then(result => {
+            if (result.success && result.channels[index]) {
+                const channel = result.channels[index];
+                document.getElementById('modalTitle').textContent = 'Edit Channel';
+                document.getElementById('submitChannelBtn').textContent = 'Update Channel';
+                document.getElementById('channelIdentifier').value = channel.identifier;
+                document.getElementById('channelName').value = channel.name;
+                document.getElementById('channelEnabled').checked = channel.enabled;
+                document.getElementById('channelModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading channel for edit:', error);
+            showNotification('Error loading channel data', 'error');
+        });
+}
+
+function closeChannelModal() {
+    document.getElementById('channelModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    editingChannelIndex = -1;
+}
+
+async function toggleChannelStatus(index) {
+    try {
+        // Get current channel data
+        const response = await fetch('/api/channels');
+        const result = await response.json();
+        
+        if (!result.success || !result.channels[index]) {
+            throw new Error('Channel not found');
+        }
+        
+        const channel = result.channels[index];
+        const newStatus = !channel.enabled;
+        
+        const updateResponse = await fetch(`/api/channels/${index}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                enabled: newStatus
+            })
+        });
+        
+        const updateResult = await updateResponse.json();
+        
+        if (updateResult.success) {
+            showNotification(`Channel ${newStatus ? 'enabled' : 'disabled'} successfully!`, 'success');
+            loadChannels(); // Reload the table
+        } else {
+            throw new Error(updateResult.error || 'Failed to update channel');
+        }
+        
+    } catch (error) {
+        console.error('Error toggling channel status:', error);
+        showNotification(`Failed to update channel: ${error.message}`, 'error');
+    }
+}
+
+async function deleteChannel(index) {
+    // Get current channel data for confirmation
+    try {
+        const response = await fetch('/api/channels');
+        const result = await response.json();
+        
+        if (!result.success || !result.channels[index]) {
+            throw new Error('Channel not found');
+        }
+        
+        const channel = result.channels[index];
+        
+        if (!confirm(`Are you sure you want to delete "${channel.name}"?\n\nThis will remove it from the configuration but won't delete archived files.`)) {
+            return;
+        }
+        
+        const deleteResponse = await fetch(`/api/channels/${index}`, {
+            method: 'DELETE'
+        });
+        
+        const deleteResult = await deleteResponse.json();
+        
+        if (deleteResult.success) {
+            showNotification('Channel deleted successfully!', 'success');
+            loadChannels(); // Reload the table
+        } else {
+            throw new Error(deleteResult.error || 'Failed to delete channel');
+        }
+        
+    } catch (error) {
+        console.error('Error deleting channel:', error);
+        showNotification(`Failed to delete channel: ${error.message}`, 'error');
+    }
+}
+
+// Handle channel form submission
+document.getElementById('channelForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const identifier = document.getElementById('channelIdentifier').value.trim();
+    const name = document.getElementById('channelName').value.trim();
+    const enabled = document.getElementById('channelEnabled').checked;
+    
+    if (!identifier || !name) {
+        showNotification('Please fill in all required fields', 'error');
+        return;
+    }
+    
+    const submitBtn = document.getElementById('submitChannelBtn');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = editingChannelIndex >= 0 ? 'Updating...' : 'Adding...';
+    
+    try {
+        const url = editingChannelIndex >= 0 ? `/api/channels/${editingChannelIndex}` : '/api/channels';
+        const method = editingChannelIndex >= 0 ? 'PUT' : 'POST';
+        
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                identifier: identifier,
+                name: name,
+                enabled: enabled
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showNotification(
+                editingChannelIndex >= 0 ? 'Channel updated successfully!' : 'Channel added successfully!', 
+                'success'
+            );
+            closeChannelModal();
+            loadChannels(); // Reload the table
+        } else {
+            throw new Error(result.error || 'Failed to save channel');
+        }
+        
+    } catch (error) {
+        console.error('Error saving channel:', error);
+        showNotification(`Failed to save channel: ${error.message}`, 'error');
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    }
+});
+
+// Auto-generate channel name from identifier
+document.getElementById('channelIdentifier').addEventListener('input', function(e) {
+    const identifier = e.target.value.trim();
+    const nameField = document.getElementById('channelName');
+    
+    // Only auto-fill if name field is empty
+    if (!nameField.value.trim() && identifier) {
+        let suggestedName = '';
+        
+        if (identifier.startsWith('https://t.me/')) {
+            suggestedName = identifier.replace('https://t.me/', '');
+        } else if (identifier.startsWith('@')) {
+            suggestedName = identifier.substring(1);
+        }
+        
+        // Clean up the name (capitalize first letter, remove special chars)
+        if (suggestedName) {
+            suggestedName = suggestedName
+                .replace(/[^a-zA-Z0-9]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .split(' ')
+                .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                .join(' ');
+            
+            nameField.value = suggestedName;
+        }
+    }
+});
+
+// Close modal on background click
+document.getElementById('channelModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeChannelModal();
+    }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && !document.getElementById('channelModal').classList.contains('hidden')) {
+        closeChannelModal();
+    }
+});
+</script>
+{% endblock %}
